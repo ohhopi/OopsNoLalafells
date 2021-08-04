@@ -8,9 +8,9 @@ using Dalamud.Game.ClientState.Actors;
 using Dalamud.Game.ClientState.Structs;
 using Dalamud.Plugin;
 using Dalamud.Hooking;
-using OopsAllLalafells.Attributes;
+using OopsNoLalafells.Attributes;
 
-namespace OopsAllLalafells
+namespace OopsNoLalafells
 {
     public class Plugin : IDalamudPlugin
     {
@@ -32,7 +32,7 @@ namespace OopsAllLalafells
 
         private static readonly short[] RACE_STARTER_GEAR_IDS;
 
-        public string Name => "Oops, All Lalafells!";
+        public string Name => "Oops, No Lalafells!";
         private DalamudPluginInterface pluginInterface;
         public Configuration config { get; private set; }
         private bool unsavedConfigChanges = false;
@@ -73,6 +73,12 @@ namespace OopsAllLalafells
 
             RACE_STARTER_GEAR_IDS = list.ToArray();
         }
+
+        // When loaded by LivePluginLoader, the executing assembly will be wrong.
+        // Supplying this property allows LivePluginLoader to supply the correct location, so that
+        // you have full compatibility when loaded normally and through LPL.
+        public string AssemblyLocation { get => assemblyLocation; set => assemblyLocation = value; }
+        private string assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
 
         public void Initialize(DalamudPluginInterface pluginInterface)
         {
@@ -135,10 +141,10 @@ namespace OopsAllLalafells
             {
                 lastWasModified = false;
                 var actor = Marshal.PtrToStructure<Actor>(lastActor);
-
                 if ((uint) actor.ActorId != CHARA_WINDOW_ACTOR_ID
                     && this.pluginInterface.ClientState.LocalPlayer != null
                     && actor.ActorId != this.pluginInterface.ClientState.LocalPlayer.ActorId
+                    && actor.Customize[(int)CustomizeIndex.Race] == ((int)this.config.ChangeOthersOriginRace)
                     && this.config.ShouldChangeOthers)
                 {
                     this.ChangeRace(customizeDataPtr, this.config.ChangeOthersTargetRace);
@@ -224,7 +230,7 @@ namespace OopsAllLalafells
                 return;
             }
 
-            PluginLog.Log($"Target race for other players toggled to {changeRace}, refreshing players");
+            PluginLog.Log($"Race change is toggled to {changeRace}, refreshing players");
             this.config.ShouldChangeOthers = changeRace;
             unsavedConfigChanges = true;
         }
@@ -238,6 +244,18 @@ namespace OopsAllLalafells
 
             PluginLog.Log($"Target race for other players changed to {race}, refreshing players");
             this.config.ChangeOthersTargetRace = race;
+            unsavedConfigChanges = true;
+        }
+
+        public void UpdateOtherOriginRace(Race race)
+        {
+            if (this.config.ChangeOthersOriginRace == race)
+            {
+                return;
+            }
+
+            PluginLog.Log($"Origin race for other players changed to {race}, refreshing players");
+            this.config.ChangeOthersOriginRace = race;
             unsavedConfigChanges = true;
         }
 
@@ -302,7 +320,7 @@ namespace OopsAllLalafells
         }
 
         [Command("/poal")]
-        [HelpMessage("Opens the Oops, All Lalafells! settings menu.")]
+        [HelpMessage("Opens the Oops, No Lalafells! settings menu.")]
         public void OpenSettingsMenuCommand(string command, string args)
         {
             OpenSettingsMenu(command, args);

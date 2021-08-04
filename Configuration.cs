@@ -3,16 +3,17 @@ using Dalamud.Plugin;
 using System;
 using Newtonsoft.Json;
 
-namespace OopsAllLalafells {
+namespace OopsNoLalafells {
     public class Configuration : IPluginConfiguration {
         [NonSerialized]
         private DalamudPluginInterface pluginInterface;
 
         public int Version { get; set; } = 1;
         
-        [JsonIgnore] // Experimental feature - do not load/save
-        public Race ChangeOthersTargetRace { get; set; } = Race.LALAFELL;
-        
+        // [JsonIgnore] // Experimental feature - do not load/save
+        public Race ChangeOthersTargetRace { get; set; } = Race.ELEZEN;
+        public Race ChangeOthersOriginRace { get; set; } = Race.LALAFELL;
+
         public bool ShouldChangeOthers { get; set; } = false;
         
         public void Initialize(DalamudPluginInterface pluginInterface) {

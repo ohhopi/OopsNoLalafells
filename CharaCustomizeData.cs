@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using Dalamud.Game.ClientState.Actors;
 
-namespace OopsAllLalafells {
+namespace OopsNoLalafells {
     [StructLayout((LayoutKind.Explicit))]
     public struct CharaCustomizeData {
         [FieldOffset((int) CustomizeIndex.Race)] public Race Race;

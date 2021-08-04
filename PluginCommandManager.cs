@@ -1,6 +1,6 @@
 using Dalamud.Game.Command;
 using Dalamud.Plugin;
-using OopsAllLalafells.Attributes;
+using OopsNoLalafells.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Reflection;
 using static Dalamud.Game.Command.CommandInfo;
 // ReSharper disable ForCanBeConvertedToForeach
 
-namespace OopsAllLalafells
+namespace OopsNoLalafells
 {
     public class PluginCommandManager<THost> : IDisposable
     {

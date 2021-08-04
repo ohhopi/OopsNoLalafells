@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OopsAllLalafells.Attributes
+namespace OopsNoLalafells.Attributes
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class HelpMessageAttribute : Attribute
