@@ -7,8 +7,8 @@
     <FileVersion>1.1.0.0</FileVersion>
     <Version>1.1.0.0</Version>
     <PackageVersion>1.1.0.0</PackageVersion>
-    <AssemblyName>OopsNoLalafells</AssemblyName>
-    <RootNamespace>OopsNoLalafells</RootNamespace>
+    <AssemblyName>RaceSwitcheroo</AssemblyName>
+    <RootNamespace>RaceSwitcheroo</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -60,7 +60,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="OopsNoLalafells.json">
+    <None Update="RaceSwitcheroo.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

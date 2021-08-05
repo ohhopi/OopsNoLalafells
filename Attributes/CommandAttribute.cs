@@ -1,6 +1,6 @@
 using System;
 
-namespace OopsNoLalafells.Attributes
+namespace RaceSwitcheroo.Attributes
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class CommandAttribute : Attribute

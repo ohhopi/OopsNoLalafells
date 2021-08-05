@@ -8,9 +8,9 @@ using Dalamud.Game.ClientState.Actors;
 using Dalamud.Game.ClientState.Structs;
 using Dalamud.Plugin;
 using Dalamud.Hooking;
-using OopsNoLalafells.Attributes;
+using RaceSwitcheroo.Attributes;
 
-namespace OopsNoLalafells
+namespace RaceSwitcheroo
 {
     public class Plugin : IDalamudPlugin
     {
@@ -32,7 +32,7 @@ namespace OopsNoLalafells
 
         private static readonly short[] RACE_STARTER_GEAR_IDS;
 
-        public string Name => "Oops, No Lalafells!";
+        public string Name => "Race Switcheroo";
         private DalamudPluginInterface pluginInterface;
         public Configuration config { get; private set; }
         private bool unsavedConfigChanges = false;
@@ -58,6 +58,8 @@ namespace OopsNoLalafells
 
         private Race lastPlayerRace;
         private byte lastPlayerGender;
+
+        Random random = new Random();
 
         // This sucks, but here we are
         static Plugin()
@@ -147,7 +149,15 @@ namespace OopsNoLalafells
                     && actor.Customize[(int)CustomizeIndex.Race] == ((int)this.config.ChangeOthersOriginRace)
                     && this.config.ShouldChangeOthers)
                 {
-                    this.ChangeRace(customizeDataPtr, this.config.ChangeOthersTargetRace);
+                    if(this.config.randomOnAllPlayersOfRace)
+                    {
+                        this.ChangeRace(customizeDataPtr, RandomOtherRace());
+                    }
+                    else
+                    {
+                        this.ChangeRace(customizeDataPtr, this.config.ChangeOthersTargetRace);
+                    }
+                   
                 }
             }
 
@@ -235,6 +245,46 @@ namespace OopsNoLalafells
             unsavedConfigChanges = true;
         }
 
+        public void UpdateRandomTargetRace(bool randomRace)
+        {
+            if (this.config.randomTargetRace == randomRace)
+            {
+                return;
+            }
+
+            if(randomRace)
+            {
+                this.UpdateOtherRace(RandomOtherRace());
+            }
+
+            this.config.randomTargetRace = randomRace;
+            unsavedConfigChanges = true;
+        }
+
+
+        public void UpdateRandomOnAllPlayersOfRace(bool randomRace)
+        {
+            if (this.config.randomOnAllPlayersOfRace == randomRace)
+            {
+                return;
+            }
+
+            this.config.randomOnAllPlayersOfRace = randomRace;
+            unsavedConfigChanges = true;
+        }
+
+        public Race RandomOtherRace()
+        {
+            Array values = Enum.GetValues(typeof(Race));
+           
+            Race RandomRace = (Race)values.GetValue(random.Next(values.Length));
+            while (RandomRace == this.config.ChangeOthersOriginRace)
+            {
+                RandomRace = (Race)values.GetValue(random.Next(values.Length));
+            }
+            return RandomRace;
+        }
+
         public void UpdateOtherRace(Race race)
         {
             if (this.config.ChangeOthersTargetRace == race)
@@ -319,8 +369,8 @@ namespace OopsNoLalafells
             return eq;
         }
 
-        [Command("/poal")]
-        [HelpMessage("Opens the Oops, No Lalafells! settings menu.")]
+        [Command("/rswtich")]
+        [HelpMessage("Opens the Race Switcheroo settings menu.")]
         public void OpenSettingsMenuCommand(string command, string args)
         {
             OpenSettingsMenu(command, args);

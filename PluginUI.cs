@@ -3,11 +3,10 @@ using System;
 using System.Numerics;
 using Dalamud.Game.Text;
 
-namespace OopsNoLalafells
+namespace RaceSwitcheroo
 {
     public class PluginUI
     {
-        private static Vector4 WHAT_THE_HELL_ARE_YOU_DOING = new Vector4(1, 0, 0, 1);
         private readonly Plugin plugin;
 
         public PluginUI(Plugin plugin)
@@ -23,20 +22,23 @@ namespace OopsNoLalafells
             }
 
             bool settingsVisible = this.plugin.SettingsVisible;
-            if (ImGui.Begin("Oops, No Lalafells!", ref settingsVisible, ImGuiWindowFlags.AlwaysAutoResize))
+            if (ImGui.Begin("Race Switcheroo", ref settingsVisible, ImGuiWindowFlags.AlwaysAutoResize))
             {
                 bool shouldChangeOthers = this.plugin.config.ShouldChangeOthers;
                 ImGui.Checkbox("Change others", ref shouldChangeOthers);
 
                     Race othersTargetRace = this.plugin.config.ChangeOthersTargetRace;
                     Race othersOriginRace = this.plugin.config.ChangeOthersOriginRace;
+
                     if (shouldChangeOthers)
                     {
-                        if (ImGui.BeginCombo("Origin Race", othersOriginRace.GetAttribute<Display>().Value))
+
+                    if (ImGui.BeginCombo("Origin Race", othersOriginRace.GetAttribute<Display>().Value))
                         {
                             foreach (Race race in Enum.GetValues(typeof(Race)))
                             {
                                 ImGui.PushID((byte)race);
+
                                 if (ImGui.Selectable(race.GetAttribute<Display>().Value, race == othersOriginRace))
                                 {
                                     othersOriginRace = race;
@@ -53,11 +55,15 @@ namespace OopsNoLalafells
                             ImGui.EndCombo();
                         }
 
+                    bool randomTargetRace = this.plugin.config.randomTargetRace;
+                    ImGui.Checkbox("Random target race", ref randomTargetRace);
+                    if (!randomTargetRace)
+                    {
                         if (ImGui.BeginCombo("Target Race", othersTargetRace.GetAttribute<Display>().Value))
                         {
                             foreach (Race race in Enum.GetValues(typeof(Race)))
                             {
-                                ImGui.PushID((byte) race);
+                                ImGui.PushID((byte)race);
                                 if (ImGui.Selectable(race.GetAttribute<Display>().Value, race == othersTargetRace))
                                 {
                                     othersTargetRace = race;
@@ -73,12 +79,26 @@ namespace OopsNoLalafells
 
                             ImGui.EndCombo();
                         }
+                        this.plugin.UpdateOtherRace(othersTargetRace);
+                    } else
+                    {
+                        bool randomOnAllPlayersOfRace = this.plugin.config.randomOnAllPlayersOfRace;
+                        ImGui.Checkbox("Random on all of origin race", ref randomOnAllPlayersOfRace);
+                        bool RandIsPressed = ImGui.Button("Randomise");
+                        if (RandIsPressed)
+                        {
+                            this.plugin.UpdateOtherRace(this.plugin.RandomOtherRace());
+                        }
+                        if (!randomOnAllPlayersOfRace)
+                        {
+                            ImGui.Text("Target race : " + this.plugin.config.ChangeOthersTargetRace.GetAttribute<Display>().Value);
+                        }
+                        this.plugin.UpdateRandomOnAllPlayersOfRace(randomOnAllPlayersOfRace);
+                    }
 
-                    this.plugin.UpdateOtherRace(othersTargetRace);
+                    this.plugin.UpdateRandomTargetRace(randomTargetRace);
+                    
                     this.plugin.UpdateOtherOriginRace(othersOriginRace);
-
-                    ImGui.TextColored(WHAT_THE_HELL_ARE_YOU_DOING,
-                        "Experimental and may crash your game, uncat your boy,\nor cause the Eighth Umbral Calamity. YOU HAVE BEEN WARNED!");
 
                 }
                 else

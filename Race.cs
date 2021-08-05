@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace OopsNoLalafells {
+namespace RaceSwitcheroo {
 	public enum Race : byte {
         [Display("Hyur")]
 		HYUR = 1,
